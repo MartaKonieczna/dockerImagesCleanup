@@ -120,7 +120,7 @@ private def imageCleanup(String timeUnit, int timeInterval, String[] repos, log,
     int cntNoDeletePermissions = 0
     long bytesFound = 0
     long bytesFoundWithNoDeletePermission = 0
-    def imagesCleanedUp = searches.imagesNotDownloadedSince(calendarUntil, calendarUntil, repos)
+    def imagesCleanedUp = searches.artifactsNotDownloadedSince(calendarUntil, calendarUntil, repos)
 	log.info "Starting search of images"
 
 }
