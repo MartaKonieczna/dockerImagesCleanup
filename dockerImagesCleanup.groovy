@@ -92,15 +92,15 @@ if ( configFile.exists() ) {
         jobs {
             "scheduledCleanup_$count"(cron: cron) {
                 log.info "Policy settings for scheduled run at($cron): repo list($repos), timeUnit($timeUnit), timeInterval($timeInterval), paceTimeMS($paceTimeMS) dryrun($dryRun) disablePropertiesSupport($disablePropertiesSupport)"
-                artifactCleanup( timeUnit, timeInterval, repos, log, paceTimeMS, dryRun, disablePropertiesSupport )
+                imageCleanup( timeUnit, timeInterval, repos, log, paceTimeMS, dryRun, disablePropertiesSupport )
             }
         }
         count++
     }  
 }
 
-private def artifactCleanup(String timeUnit, int timeInterval, String[] repos, log, paceTimeMS, dryRun = false, disablePropertiesSupport = false) {
-    log.info "Starting artifact cleanup for repositories $repos, until $timeInterval ${timeUnit}s ago with pacing interval $paceTimeMS ms, dryrun: $dryRun, disablePropertiesSupport: $disablePropertiesSupport"
+private def imageCleanup(String timeUnit, int timeInterval, String[] repos, log, paceTimeMS, dryRun = false, disablePropertiesSupport = false) {
+    log.info "Starting docker images cleanup for repositories $repos, until $timeInterval ${timeUnit}s ago with pacing interval $paceTimeMS ms, dryrun: $dryRun, disablePropertiesSupport: $disablePropertiesSupport"
 
     // Create Map(repo, paths) of skiped paths (or others properties supported in future ...)
     def skip = [:]
@@ -113,14 +113,14 @@ private def artifactCleanup(String timeUnit, int timeInterval, String[] repos, l
     calendarUntil.add(mapTimeUnitToCalendar(timeUnit), -timeInterval)
 
     def calendarUntilFormatted = new SimpleDateFormat("yyyy/MM/dd HH:mm").format(calendarUntil.getTime());
-    log.info "Removing all artifacts not downloaded since $calendarUntilFormatted"
+    log.info "Removing all images not downloaded since $calendarUntilFormatted"
 
     Global.stopCleaning = false
-    int cntFoundArtifacts = 0
+    int cntFoundImages = 0
     int cntNoDeletePermissions = 0
     long bytesFound = 0
     long bytesFoundWithNoDeletePermission = 0
-    def artifactsCleanedUp = searches.artifactsNotDownloadedSince(calendarUntil, calendarUntil, repos)
+    def imagesCleanedUp = searches.imagesNotDownloadedSince(calendarUntil, calendarUntil, repos)
 	log.info "Starting search of images"
 
 }
@@ -141,9 +141,7 @@ private def getSkippedPaths(String[] repos) {
                 if ('folder' == item.type){
                     path += '/'
                 }
-                if (log.isTraceEnabled()){
-                    log.trace "skip found for " + repoKey + ":" + path
-                }
+                log.info "skip found for " + repoKey + ":" + path
                 pathsTmp.add(path)
             }
         }
@@ -152,9 +150,7 @@ private def getSkippedPaths(String[] repos) {
         def paths = []
         for (path in pathsTmp.sort{ it }) {
             if (paths.size == 0 || ! path.startsWith(paths[-1])) {
-                if (log.isTraceEnabled()){
-                    log.trace "skip added for " + repoKey + ":" + path
-                }
+			log.info "skip added for " + repoKey + ":" + path
                 paths.add(path)
             }
         }
