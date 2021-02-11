@@ -1,0 +1,15 @@
+{
+    "policies": [
+        {
+            "cron": "0 0 5 31 2 ?",
+            "repos": [
+                "docker-dev-local"
+            ],
+            "timeUnit": "month",
+            "timeInterval": 7,
+            "dryRun": true,
+            "paceTimeMS": 500,
+            "disablePropertiesSupport": false
+        }
+    ]
+}
