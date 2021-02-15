@@ -40,7 +40,7 @@ executions {
         def dryRun = params['dryRun'] ? new Boolean(params['dryRun'][0]) : false
         def disablePropertiesSupport = params['disablePropertiesSupport'] ? new Boolean(params['disablePropertiesSupport'][0]) : false
         def paceTimeMS = params['paceTimeMS'] ? params['paceTimeMS'][0] as int : 0
-
+		}
 
     cleanupCtl(groups: [pluginGroup]) { params ->
         def command = params['command'] ? params['command'][0] as String : ''
@@ -68,7 +68,6 @@ executions {
                 log.info "Missing or invalid command, '$command'"
         }
     }
-}
 }
 
 def configFile = new File(ctx.artifactoryHome.etcDir, CONFIG_FILE_PATH)
