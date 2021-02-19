@@ -122,10 +122,42 @@ private def imageCleanup(String timeUnit, int timeInterval, String[] repos, log,
     long bytesFound = 0
     long bytesFoundWithNoDeletePermission = 0
     def imagesCleanedUp = searches.artifactsNotDownloadedSince(calendarUntil, calendarUntil, repos)
-	log.info "Starting search of images"
-
 }
 
+class ImageSearchaqlResultHnadler implements org.artifactory.search.aql.AqlResultHandler {
+
+	private AqlResult = null
+	
+	private void handle(AqlResult result){
+		result = result
+	}
+	
+	public AqlResult getResult(){
+		return result
+	}
+}
+
+def aqlQuery="""
+
+	items.find({
+		"$or":[{"repo":"docker-local","repo":"docker-dev-local"}],
+		"stat.downloaded":"{"$before":"1mo"},
+		"name":{"eq":"manifest.json"}}
+		).include("name","repo","path","stat.downloads","stat.downloaded")
+"""
+
+def resultHandler = new ImageSearchaqlResultHnadler
+
+searches.aql(aqlQuery, resultHandler)
+
+AqlResult result = resultHandler.getResult()
+
+for(def item : result){
+	log.info "Item properties: Name=${item.name}, path=${item.path}, Repo=${item.repo}, downloaded=${item.stats.downloaded}"
+	
+}	
+		
+		
 private def getSkippedPaths(String[] repos) {
     def timeStart = new Date()
     def skip = [:]
