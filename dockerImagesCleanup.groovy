@@ -129,7 +129,7 @@ class ImageSearchaqlResultHandler implements org.artifactory.search.aql.AqlResul
 
 	private AqlResult = null
 	
-	private void handle(AqlResult result){
+	public void handle(AqlResult result){
 		result = result
 	}
 	
