@@ -1,6 +1,7 @@
 import org.apache.commons.lang3.StringUtils
 import org.artifactory.api.repo.exception.ItemNotFoundRuntimeException
 import org.artifactory.exception.CancelException
+import org.artifactory.search.aql.*
 
 import groovy.json.JsonSlurper
 import groovy.time.TimeCategory
@@ -124,7 +125,7 @@ private def imageCleanup(String timeUnit, int timeInterval, String[] repos, log,
     def imagesCleanedUp = searches.artifactsNotDownloadedSince(calendarUntil, calendarUntil, repos)
 }
 
-class ImageSearchaqlResultHnadler implements org.artifactory.search.aql.AqlResultHandler {
+class ImageSearchaqlResultHandler implements org.artifactory.search.aql.AqlResultHandler {
 
 	private AqlResult = null
 	
@@ -146,7 +147,7 @@ def aqlQuery="""
 		).include("name","repo","path","stat.downloads","stat.downloaded")
 """
 
-def resultHandler = new ImageSearchaqlResultHnadler
+def resultHandler = new ImageSearchaqlResultHnadler()
 
 searches.aql(aqlQuery, resultHandler)
 
