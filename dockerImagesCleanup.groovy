@@ -146,7 +146,7 @@ def aqlQuery="""
 		).include("name","repo","path","stat.downloads","stat.downloaded")
 """
 
-def resultHandler = new ImageSearchaqlResultHnadler()
+def resultHandler = new ImageSearchaqlResultHandler()
 
 searches.aql(aqlQuery, resultHandler)
 
