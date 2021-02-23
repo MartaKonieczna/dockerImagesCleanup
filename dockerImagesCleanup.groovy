@@ -139,11 +139,10 @@ class ImageSearchaqlResultHandler implements org.artifactory.search.aql.AqlResul
 }
 
 def aqlQuery="""
-
 	items.find({
 		"$or":[{"repo":"docker-local","repo":"docker-dev-local"}],
-		"stat.downloaded":"{"$before":"1mo"},
-		"name":{"eq":"manifest.json"}}
+		"stat.downloaded":{"$before":"1mo"},
+		"name":{"$eq":"manifest.json"}}
 		).include("name","repo","path","stat.downloads","stat.downloaded")
 """
 
