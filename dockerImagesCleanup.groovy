@@ -142,15 +142,14 @@ private def imageCleanup(String timeUnit, int timeInterval, String[] repos, log,
 
 
 
-def aqlQuery='''
-	items.find(
+def aqlQuery='''items.find(
 	
 		{"$or":[{"repo":"docker-dev-local","repo":"docker-win-dev-local"}],
 		"stat.downloaded":{"$before":"1mo"},
-		"name":{"$eq":"manifest.json"}}
+		"name":{"$eq":"manifest.json"}})
 		).include("name","repo","path","stat.downloads","stat.downloaded")'''
 
-def resultHandler = new ImageSearchaqlResultHandler()
+def resultHandler = new ImageSearchAqlResultHandler()
 
 searches.aql(aqlQuery, resultHandler)
 
