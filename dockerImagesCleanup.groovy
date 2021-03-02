@@ -21,7 +21,7 @@ class Global {
     static int paceTimeMS = 0
 }
 
-class ImageSearchaqlResultHandler implements org.artifactory.search.aql.AqlResultHandler {
+class ImageSearchAqlResultHandler implements org.artifactory.search.aql.AqlResultHandler {
 
 	private AqlResult result = null
 	
