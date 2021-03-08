@@ -21,23 +21,6 @@ class Global {
     static int paceTimeMS = 0
 }
 
-class ImageSearchAqlResultHandler implements org.artifactory.search.aql.AqlResultHandler {
-
-	private AqlResult result = null
-	
-	public ImageSearchAqlResultHandler(){}
-	
-	public void handle(AqlResult result){
-		this.result = result
-	}
-	
-	public AqlResult getResult(){
-		return this.result
-	}
-}
-
-
-
 // curl command example for running this plugin (Prior to Artifactory 5.x, use pipe '|' and not semi-colons ';' for parameters separation).
 // curl -i -uadmin:password -X POST "http://localhost:8081/artifactory/api/plugins/execute/cleanup?params=timeUnit=day;timeInterval=1;repos=libs-release-local;dryRun=true;paceTimeMS=2000;disablePropertiesSupport=true"
 //
@@ -139,26 +122,26 @@ private def imageCleanup(String timeUnit, int timeInterval, String[] repos, log,
     int cntNoDeletePermissions = 0
     long bytesFound = 0
     long bytesFoundWithNoDeletePermission = 0
-    def imagesCleanedUp = searches.artifactsNotDownloadedSince(calendarUntil, calendarUntil, repos)
-}
 
 
+	def aqlQuery='''items.find(
+		
+			{"$or":[{"repo":"docker-dev-local","repo":"docker-win-dev-local"}],
+			"stat.downloaded":{"$before":"1mo"},
+			"name":{"$eq":"manifest.json"}})
+			.include("name","repo","path","stat.downloads","stat.downloaded")'''
+			
+			
+	searches.aql(aqlQuery) { AqlResult result ->
+		log.info "Total images for deletion: ${result.getTotal()}"
+		
+		result.each{ Map item ->
+			String itemPath = item.path + "/" + item.name
+			log.info "Item for deletion: ${itemPath}"
+		}
+	}
 
-def aqlQuery='''items.find(
-	
-		{"$or":[{"repo":"docker-dev-local","repo":"docker-win-dev-local"}],
-		"stat.downloaded":{"$before":"1mo"},
-		"name":{"$eq":"manifest.json"}})
-		.include("name","repo","path","stat.downloads","stat.downloaded")'''
-
-def resultHandler = new ImageSearchAqlResultHandler()
-
-searches.aql(aqlQuery, resultHandler)
-
-AqlResult result = resultHandler.getResult()
-
-for(def item : result){
-	log.info "Item properties: Name=${item.name}, path=${item.path}, Repo=${item.repo}, downloaded=${item.stats.downloaded}"
+	log.info "Finished DockerImageCleanup job"
 	
 }	
 		
